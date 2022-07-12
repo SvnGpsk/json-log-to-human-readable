@@ -82,9 +82,25 @@ type Tracing struct {
 func (lm *QuarkusLogMessage) transform(w io.Writer) {
 	// log contains a tracing message
 	if lm.Tracing != (Tracing{}) {
-		fmt.Fprintf(w, "%v %v\ttraceId=%v %v\t%v\n", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		if strings.EqualFold(lm.Level, "Info") {
+			fmt.Fprintf(w, "\\033[32m%v \\033[39m%v\ttraceId=%v %v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Warn") {
+			fmt.Fprintf(w, "\\033[33m%v \\033[39m%v\ttraceId=%v %v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Error") {
+			fmt.Fprintf(w, "\\033[31m%v \\033[39m%v\ttraceId=%v %v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
 	} else {
-		fmt.Fprintf(w, "%v %v\t%v\t%v\n", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		if strings.EqualFold(lm.Level, "Info") {
+			fmt.Fprintf(w, "\\033[32m%v \\033[39m%v\t%v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Warn") {
+			fmt.Fprintf(w, "\\033[33m%v \\033[39m%v\t%v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Error") {
+			fmt.Fprintf(w, "\\033[31m%v \\033[39m%v\t%v\t\\033[37m%v\n", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
 	}
 
 	// log message contains an error error
