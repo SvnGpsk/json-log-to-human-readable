@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -82,9 +83,25 @@ type Tracing struct {
 func (lm *QuarkusLogMessage) transform(w io.Writer) {
 	// log contains a tracing message
 	if lm.Tracing != (Tracing{}) {
-		fmt.Fprintf(w, "%v %v\ttraceId=%v %v\t%v\n", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		if strings.EqualFold(lm.Level, "Info") {
+			fmt.Fprintf(w, "\033[32m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Warn") {
+			fmt.Fprintf(w, "\033[33m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Error") {
+			fmt.Fprintf(w, "\033[31m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
 	} else {
-		fmt.Fprintf(w, "%v %v\t%v\t%v\n", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		if strings.EqualFold(lm.Level, "Info") {
+			fmt.Fprintf(w, "\033[32m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Warn") {
+			fmt.Fprintf(w, "\033[33m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Error") {
+			fmt.Fprintf(w, "\033[31m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
 	}
 
 	// log message contains an error error
@@ -94,10 +111,10 @@ func (lm *QuarkusLogMessage) transform(w io.Writer) {
 }
 
 func (ex *Exception) transform(w io.Writer) {
-	fmt.Fprintf(w, "Caused by: %v. %s:\n", ex.ExceptionType, ex.Message)
+	fmt.Fprintf(w, "\033[31mCaused by: %v. %s:\n\033[31m", ex.ExceptionType, ex.Message)
 
 	for _, frame := range *ex.Frames {
-		fmt.Fprintf(w, "\t at %s(%s:%v)\n", frame.Method, frame.Class, frame.Line)
+		fmt.Fprintf(w, "\t \033[31mat %s(%s:%v)\n\033[39m", frame.Method, frame.Class, frame.Line)
 	}
 
 	if ex.CausedBy != (CausedBy{}) {
@@ -119,8 +136,8 @@ func (glm *GoZapLogMessage) transform(w io.Writer) {
 	fmt.Fprintf(w, "%v %v\t%v\tmsg: %v\tcontroller: %v\trequest: %v\n", glm.Level, timestamp, glm.Logger, glm.Message, glm.Controller, glm.Request)
 	// log message contains an error error
 	if glm.Error != "" {
-		fmt.Fprintf(w, "error: %s", glm.Error)
-		fmt.Fprintf(w, "stacktrace: %s\n", glm.Stacktrace)
+		fmt.Fprintf(w, "\033[31merror: %s\033[39m", glm.Error)
+		fmt.Fprintf(w, "\033[31mstacktrace: %s\n\033[39m", glm.Stacktrace)
 	}
 }
 
