@@ -83,6 +83,12 @@ type Tracing struct {
 func (lm *QuarkusLogMessage) transform(w io.Writer) {
 	// log contains a tracing message
 	if lm.Tracing != (Tracing{}) {
+		if strings.EqualFold(lm.Level, "Trace") {
+			fmt.Fprintf(w, "\033[36m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Debug") {
+			fmt.Fprintf(w, "\033[35m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
 		if strings.EqualFold(lm.Level, "Info") {
 			fmt.Fprintf(w, "\033[32m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
 		}
@@ -92,7 +98,16 @@ func (lm *QuarkusLogMessage) transform(w io.Writer) {
 		if strings.EqualFold(lm.Level, "Error") {
 			fmt.Fprintf(w, "\033[31m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
 		}
+		if strings.EqualFold(lm.Level, "Severe") {
+			fmt.Fprintf(w, "\033[91m%v \033[39m%v\t\033[36mtraceId=%v \033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.Tracing.TraceID, lm.LoggerName, lm.Message)
+		}
 	} else {
+		if strings.EqualFold(lm.Level, "Trace") {
+			fmt.Fprintf(w, "\033[36m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Debug") {
+			fmt.Fprintf(w, "\033[35m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
 		if strings.EqualFold(lm.Level, "Info") {
 			fmt.Fprintf(w, "\033[32m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
 		}
@@ -101,6 +116,9 @@ func (lm *QuarkusLogMessage) transform(w io.Writer) {
 		}
 		if strings.EqualFold(lm.Level, "Error") {
 			fmt.Fprintf(w, "\033[31m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
+		}
+		if strings.EqualFold(lm.Level, "Severe") {
+			fmt.Fprintf(w, "\033[91m%v \033[39m%v\t\033[37m%v\t\033[35m%v\n\033[39m", lm.Level, lm.Timestamp, lm.LoggerName, lm.Message)
 		}
 	}
 
